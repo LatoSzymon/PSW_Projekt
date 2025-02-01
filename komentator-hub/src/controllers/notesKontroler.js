@@ -4,7 +4,7 @@ const notatki = [{
     "id": "1685461234567",
     "title": "Notatka do usunięcia",
     "content": "Treść"
-  }]; // Baza notatek
+  }];
 
 const dajNotki = (req, res) => {
   res.status(200).json(notatki);
