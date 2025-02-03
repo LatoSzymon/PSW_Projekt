@@ -12,6 +12,7 @@ const { pool } = require("./src/config/bazadanych");
 const baza = require("./src/config/bazadanych");
 const cookieParser = require("cookie-parser");
 
+app.use(cookieParser());
 const PORT = process.env.PORT || 3000;
 
 baza.clearTables();
@@ -44,6 +45,10 @@ app.get("/login", (req, res) => {
 
 app.get("/main", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "main.html"));
+});
+
+app.get("/notki", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "notki.html"));
 });
 
 // Tworzenie serwera HTTP i WebSocket

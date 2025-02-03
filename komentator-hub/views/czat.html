@@ -3,16 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Czat</title>
+    <link rel="stylesheet" href="../assets/style/ogolny.css">
 </head>
 <body>
-    <h1>Test WebSocketa</h1>
+    <header>
+        <img src="../assets/images/logoPHE.jpg" alt="">
+        <h1>Czat na żywo z innymi</h1>
+    </header>
+    <div class="menu">
+        <a href="/czat">Czat</a>
+        <a href="/notki">Notatki</a>
+        <a href="#" class="slepy-link">VODy</a>
+        <a href="#" class="slepy-link">Dyspozycyjność i kalendarz</a>
+        <button id="logoutBtn">Wyloguj</button>
+    </div>
     <div>
         <ul id="messages">
         </ul>
     </div>
     <input type="text" id="msgInput" placeholder="wpisz co ci tam w duszy gra">
     <button id="sendBaton">Wyslij</button>
+    <footer>Projekt Szymona Lato na studia. Wykonany z obowiązku i pasji do esportu. Wszystkie prawa zastrzeżone :3</footer>
     <script src="/assets/javascript/czat.js"></script>
 </body>
 </html>

@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Strona Główna</title>
+    <link rel="stylesheet" href="../assets/style/ogolny.css">
 </head>
 <body>
-    <h1>Witaj w Komentator Hub</h1>
-    <p>Wybierz funkcję, z której chcesz skorzystać:</p>
+    <header>
+        <img src="../assets/images/logoPHE.jpg" alt="">
+        <h1>Polski Hub Esportowy</h1>
+    </header>
+    <div class="menu">
+        <a href="/czat">Czat</a>
+        <a href="/notki">Notatki</a>
+        <a href="#" class="slepy-link">VODy</a>
+        <a href="#" class="slepy-link">Dyspozycyjność i kalendarz</a>
+        <button id="logoutBtn">Wyloguj</button>
+    </div>
 
-    <ul>
-        <li><a href="/czat">Przejdź do Czat</a></li>
-        <li><a href="/notes">Zarządzaj notatkami</a></li>
-        <!-- Możesz dodać kolejne -->
-    </ul>
+    <footer>Projekt Szymona Lato na studia. Wykonany z obowiązku i pasji do esportu. Wszystkie prawa zastrzeżone :3</footer>
 
-    <button id="logoutBtn">Wyloguj</button>
-
-  <!-- (opcjonalnie) Skrypt do obsługi main.js -->
     <script src="/assets/javascript/main.js"></script>
 </body>
 </html>

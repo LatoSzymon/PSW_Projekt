@@ -21,8 +21,7 @@ pool.connect((err) => {
 async function clearTables() {
     try {
       await pool.query('TRUNCATE TABLE sessions RESTART IDENTITY');
-      await pool.query('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
-      console.log('Tabele wyczyszczone');
+      console.log('Sesje wyczyszczone');
     } catch (err) {
       console.error('Błąd czyszczenia tabel:', err);
     }

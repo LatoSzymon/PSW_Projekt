@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notatki</title>
+  <link rel="stylesheet" href="../assets/style/ogolny.css">
+</head>
+<body>
+    <header>
+        <img src="../assets/images/logoPHE.jpg" alt="">
+        <h1>Notatki</h1>
+    </header>
+    <div class="menu">
+        <a href="/czat">Czat</a>
+        <a href="/notki">Notatki</a>
+        <a href="#" class="slepy-link">VODy</a>
+        <a href="#" class="slepy-link">Dyspozycyjność i kalendarz</a>
+        <button id="logoutBtn">Wyloguj</button>
+    </div>
+    <div class="szukanie">
+        <input type="text" id="search" placeholder="Szukaj notatek po treści...">
+        <button onclick="szukajNotki()">Szukaj</button>
+    </div>
+  <div id="nota">
+    <h2>Dodaj notatkę</h2>
+    <textarea id="tresc-nowej-notki"></textarea>
+    <button onclick="dodajNotke()">Dodaj</button>
+  </div>
+  <ul id="lista-notatek"></ul>
+  <footer>Projekt Szymona Lato na studia. Wykonany z obowiązku i pasji do esportu. Wszystkie prawa zastrzeżone :3</footer>
+  <script src="../assets/javascript/notatki.js" defer></script>
+</body>
+</html>

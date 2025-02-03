@@ -1,0 +1,80 @@
+body {
+  background-color: whitesmoke;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: "Courier New", Courier, monospace;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+img {
+  border-radius: 50%;
+  width: 90px;
+  position: absolute;
+  left: 10px;
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 60vw;
+  position: relative;
+}
+
+h1 {
+  text-shadow: 2px 2px 2px darkred;
+  color: antiquewhite;
+  margin: 5px;
+  padding: 20px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  width: 80vw;
+  background-color: darkred;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 50px;
+  font-size: large;
+}
+.menu button {
+  border: none;
+  background-color: darkred;
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+  font-size: large;
+}
+
+footer {
+  background-color: darkred;
+  color: white;
+  align-self: flex-end;
+  width: 100vw;
+  text-align: center;
+  margin-top: auto;
+  bottom: 0;
+  padding: 20px;
+}
+
+li {
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.slepy-link {
+  color: white;
+  text-decoration: none;
+  cursor: not-allowed; /* Zmiana kursora na znak zakazu */
+}/*# sourceMappingURL=ogolny.css.map */
