@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notatki</title>
   <link rel="stylesheet" href="../assets/style/ogolny.css">
+  <link rel="stylesheet" href="../assets/style/notki.css">
 </head>
 <body>
     <header>
@@ -20,12 +21,12 @@
     </div>
     <div class="szukanie">
         <input type="text" id="search" placeholder="Szukaj notatek po treści...">
-        <button onclick="szukajNotki()">Szukaj</button>
+        <button id="szukaj" onclick="szukajNotki()">Szukaj</button>
     </div>
   <div id="nota">
     <h2>Dodaj notatkę</h2>
     <textarea id="tresc-nowej-notki"></textarea>
-    <button onclick="dodajNotke()">Dodaj</button>
+    <button id="dodaj" onclick="dodajNotke()">Dodaj</button>
   </div>
   <ul id="lista-notatek"></ul>
   <footer>Projekt Szymona Lato na studia. Wykonany z obowiązku i pasji do esportu. Wszystkie prawa zastrzeżone :3</footer>

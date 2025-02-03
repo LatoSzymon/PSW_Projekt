@@ -2,7 +2,6 @@
 require("dotenv").config();
 
 const path = require("path");
-const http = require("http");
 const WebSocket = require("ws");
 const express = require("express");
 const app = require("./src/config/server");
@@ -11,20 +10,15 @@ const notkiSzprotki = require("./src/routes/notesSciezki");
 const { pool } = require("./src/config/bazadanych");
 const baza = require("./src/config/bazadanych");
 const cookieParser = require("cookie-parser");
+const https = require("https");
+const fs = require("fs");
 
 app.use(cookieParser());
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3443;
 
 baza.clearTables();
 
 app.use(cookieParser());
-// Middleware logujący żądania
-app.use((req, res, next) => {
-  console.log("Przychodzi żądanie:", req.url);
-  next();
-});
-
-// Ścieżki statyczne i routy
 app.use("/auth", authSciezki);
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/auth", authSciezki);
@@ -51,13 +45,21 @@ app.get("/notki", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "notki.html"));
 });
 
-// Tworzenie serwera HTTP i WebSocket
-const server = http.createServer(app);
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "rejestracja.html"));
+});
+
+const certPath = "./src/certs";
+const options = {
+  key: fs.readFileSync(`${certPath}/localhost-key.pem`),
+  cert: fs.readFileSync(`${certPath}/localhost.pem`),
+};
+const server = https.createServer(options, app);
+
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", async (ws, request) => {
   try {
-      // Logowanie ciasteczek
       console.log("🚀 Nowe połączenie WebSocket");
       const cookies = request.headers.cookie;
       console.log("📋 Ciasteczka:", cookies);
@@ -68,7 +70,6 @@ wss.on("connection", async (ws, request) => {
           return;
       }
 
-      // Pobieranie sessionId z ciasteczek
       const sessionId = cookies
           ?.split("; ")
           .find((row) => row.startsWith("sessionId="))
@@ -82,7 +83,6 @@ wss.on("connection", async (ws, request) => {
           return;
       }
 
-      // Sprawdzenie sesji w bazie
       const result = await pool.query("SELECT user_id FROM sessions WHERE id = $1", [sessionId]);
 
       if (result.rowCount === 0) {
@@ -91,14 +91,13 @@ wss.on("connection", async (ws, request) => {
           return;
       }
 
-      // Pobranie danych użytkownika
       const userResult = await pool.query(
           "SELECT id, nick, rola FROM users WHERE id = $1",
           [result.rows[0].user_id]
       );
 
       if (userResult.rowCount === 0) {
-          console.error("❌ Nie znaleziono użytkownika - zamykam połączenie");
+          console.error("Nie znaleziono użytkownika - zamykam połączenie");
           ws.close();
           return;
       }
@@ -109,10 +108,7 @@ wss.on("connection", async (ws, request) => {
           role: userResult.rows[0].rola,
       };
 
-      console.log(`✅ Użytkownik ${ws.user.nick} połączony do WebSocket`);
-
       ws.on("message", (data) => {
-        console.log(`📩 Odebrano wiadomość od ${ws.user.userId}: ${data}`);
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 const message = {

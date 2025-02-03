@@ -1,0 +1,44 @@
+.strefa-czatu {
+    background-color: white;
+    width: 30vw;
+    overflow-y: auto;
+    height: 800px;
+    border-radius: 20px;
+    border: 1px solid grey;
+}
+
+#msgInput {
+    border: 1px solid grey;
+    width: 30vw;
+    margin-top: 15px;
+    height: 30px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#sendBaton {
+    border: none;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    width: 100px;
+    border-radius: 50px;
+    margin-top: 15px;
+}
+
+#messages {
+    display: flex;
+    flex-direction: column;
+    li {
+        background-color: darkred;
+        word-wrap: break-word;
+        white-space: normal;
+        color: white;
+        max-width: 550px;
+        max-height: none;
+        padding: 10px;
+        border-radius: 25px;
+        margin-top: 10px;
+    }
+}

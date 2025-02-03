@@ -1,26 +1,47 @@
 'use strict';
 
 const pobierzNotatki = async () => {
+  try {
     const response = await fetch('/notes');
     const notatki = await response.json();
     const listaNotatek = document.getElementById('lista-notatek');
     listaNotatek.innerHTML = '';
-  
+
+    // Pobierz informacje o zalogowanym użytkowniku
+    const sessionRes = await fetch('/auth/session');
+    const sessionData = await sessionRes.json();
+    const sessionId = sessionData.sessionId;
+
+    // Pobierz dane użytkownika
+    const userRes = await fetch(`/auth/user?sessionId=${sessionId}`);
+    const userData = await userRes.json();
+    const zalogowanyNick = userData.nick;
+    const zalogowanyRola = userData.rola;
+
     notatki.forEach(el => {
       const li = document.createElement('li');
       li.textContent = `${el.content} (Autor: ${el.author}, Data: ${new Date(el.created_at).toLocaleString()})`;
-  
-      if (el.is_admin) {
+
+      // Sprawdź, czy użytkownik może edytować lub usuwać
+      if (zalogowanyRola === 'admin' || el.author === zalogowanyNick) {
+        const edytujBaton = document.createElement('button');
+        edytujBaton.textContent = 'Edytuj';
+        edytujBaton.onclick = () => edytujNotke(el.id, el.content);
+        li.appendChild(edytujBaton);
+
         const usunBaton = document.createElement('button');
         usunBaton.textContent = 'Usuń';
         usunBaton.onclick = () => usunNotatke(el.id);
         li.appendChild(usunBaton);
       }
-  
+
       listaNotatek.appendChild(li);
     });
-  };
-  
+  } catch (error) {
+    console.error('Błąd podczas pobierania notatek:', error);
+  }
+};
+
 
 const dodajNotke = async () => {
   try {
@@ -38,7 +59,7 @@ const dodajNotke = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content }),
     });
-    contentElement.value = ''; // Czyszczenie pola tekstowego
+    contentElement.value = '';
     pobierzNotatki();
   } catch (error) {
     console.error('Błąd podczas dodawania notatki:', error);
@@ -47,47 +68,118 @@ const dodajNotke = async () => {
 
 const usunNotatke = async (id) => {
   try {
-    await fetch(`/notes/${id}`, { method: 'DELETE' });
-    pobierzNotatki();
+    const response = await fetch(`/notes/${id}`, {
+      method: "DELETE",
+      credentials: "include", // Dodajemy, aby przesłać ciasteczka
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      alert(`Błąd: ${errorData.message}`);
+      return;
+    }
+
+    alert("Notatka została usunięta!");
+    pobierzNotatki(); // Odśwież listę notatek
   } catch (error) {
-    console.error('Błąd podczas usuwania notatki:', error);
+    console.error("Błąd podczas usuwania notatki:", error);
   }
 };
 
+
 const szukajNotki = async () => {
   try {
-    const query = document.getElementById('search').value;
-    const response = await fetch(`/notes/search?query=${query}`);
-    const notatki = await response.json();
+    const query = document.getElementById('search').value.trim();
+    
+    let response;
     if (query === '') {
-        pobierzNotatki();
+      response = await fetch('/notes'); // Pobierz wszystkie notatki, jeśli brak zapytania
+    } else {
+      response = await fetch(`/notes/search?query=${query}`);
     }
-    if (notatki.length === 0) {
-        alert('Nie znaleziono notatek!');
-        return;
-      }
+
+    const notatki = await response.json();
     const listaNotatek = document.getElementById('lista-notatek');
     listaNotatek.innerHTML = '';
+
+    if (notatki.length === 0) {
+      alert('Nie znaleziono notatek!');
+      return;
+    }
+
     notatki.forEach(el => {
-        const li = document.createElement('li');
-        li.textContent = `${el.content} (Autor: ${el.author}, Data: ${new Date(el.created_at).toLocaleString()})`;
-    
-        if (el.is_admin) {
-          const usunBaton = document.createElement('button');
-          usunBaton.textContent = 'Usuń';
-          usunBaton.onclick = () => usunNotatke(el.id);
-          li.appendChild(usunBaton);
-        }
-    
-        listaNotatek.appendChild(li);
+      const li = document.createElement('li');
+      li.textContent = `${el.content} (Autor: ${el.author}, Data: ${new Date(el.created_at).toLocaleString()})`;
+
+      const edytujBaton = document.createElement('button');
+      edytujBaton.textContent = 'Edytuj';
+      edytujBaton.onclick = () => edytujNotke(el.id, el.content);
+      li.appendChild(edytujBaton);
+
+      const usunBaton = document.createElement('button');
+      usunBaton.textContent = 'Usuń';
+      usunBaton.onclick = () => usunNotatke(el.id);
+      li.appendChild(usunBaton);
+
+      listaNotatek.appendChild(li);
     });
 
-
-    console.log(notatki); // Możesz wyświetlić wyniki w konsoli lub na stronie
   } catch (error) {
     console.error('Błąd podczas wyszukiwania notatek:', error);
   }
 };
 
-// Automatyczne załadowanie notatek po załadowaniu strony
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+      logoutBtn.addEventListener("click", async () => {
+          try {
+              const response = await fetch("/auth/logout", {
+                  method: "POST",
+                  credentials: "include",
+              });
+              if (response.ok) {
+                  window.location.href = "/login";
+              } else {
+                  console.error("Błąd podczas wylogowania:", response.statusText);
+                  alert("Nie udało się wylogować. Spróbuj ponownie.");
+              }
+          } catch (error) {
+              console.error("Błąd sieci podczas wylogowania:", error);
+              alert("Nie udało się wylogować. Spróbuj ponownie.");
+          }
+      });
+  }
+});
+
+const edytujNotke = async (id, aktualnaTresc) => {
+  const nowaTresc = prompt("Edytuj notatkę:", aktualnaTresc);
+  if (!nowaTresc || nowaTresc.trim() === "") {
+    alert("Treść nie może być pusta!");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/notes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: nowaTresc }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      alert(`Błąd: ${errorData.message}`);
+      return;
+    }
+
+    alert("Notatka została zaktualizowana!");
+    pobierzNotatki();
+  } catch (error) {
+    console.error("Błąd podczas edytowania notatki:", error);
+  }
+};
+
+
+
 document.addEventListener('DOMContentLoaded', pobierzNotatki);

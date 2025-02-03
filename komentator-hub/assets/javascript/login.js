@@ -23,7 +23,7 @@ loginBaton.addEventListener('click', async () => {
 
         if (!response.ok) {
             const messageErr = await response.json();
-            alert("Coś poszło nie tak:", messageErr.message);
+            alert("Nie można zalogować. Spróbuj ponownie.");
             console.log(messageErr.message);
             return;
         }

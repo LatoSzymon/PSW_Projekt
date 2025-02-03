@@ -22,7 +22,21 @@ const pobierzSession = async (req, res) => {
     }
 };
 
-  
+
+const wyloguj = async (req, res) => {
+    try {
+        res.clearCookie("sessionId");
+        const result = await pool.query(
+            "DELETE FROM sessions WHERE id = $1",
+            [req.cookies.sessionId]
+        );
+        console.log("Sesja wyczyszczona:", result.rowCount);
+        res.status(200).json({ message: "Wylogowano pomyślnie" });
+    } catch (error) {
+        console.error("Błąd podczas wylogowania:", error);
+        res.status(500).json({ message: "Błąd serwera" });
+    }
+};
 
 async function rejestracja2(req, res) {
     try {
@@ -66,5 +80,32 @@ const logowanie2 = async (req, res) => {
     }
 };
 
+const pobierzDaneUzytkownika = async (req, res) => {
+    try {
+      const sessionId = req.query.sessionId;
+  
+      if (!sessionId) {
+        return res.status(401).json({ message: "Brak sesji użytkownika" });
+      }
+  
+      const sessionResult = await pool.query("SELECT user_id FROM sessions WHERE id = $1", [sessionId]);
+      if (sessionResult.rowCount === 0) {
+        return res.status(401).json({ message: "Nie znaleziono sesji" });
+      }
+  
+      const userResult = await pool.query("SELECT nick, rola FROM users WHERE id = $1", [sessionResult.rows[0].user_id]);
+  
+      if (userResult.rowCount === 0) {
+        return res.status(404).json({ message: "Użytkownik nie istnieje" });
+      }
+  
+      res.status(200).json(userResult.rows[0]);
+    } catch (error) {
+      console.error("Błąd pobierania użytkownika:", error);
+      res.status(500).json({ message: "Błąd serwera" });
+    }
+  };
+  
 
-module.exports = { rejestracja2, logowanie2, pobierzSession };
+
+module.exports = { rejestracja2, logowanie2, pobierzSession, wyloguj, pobierzDaneUzytkownika };

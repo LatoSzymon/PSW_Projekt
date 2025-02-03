@@ -68,20 +68,81 @@ const szukajNotki = async (req, res) => {
 const usunNotatke = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.session.userId;
+    const sessionId = req.cookies.sessionId;
 
-    const user = await pool.query("SELECT rola FROM users WHERE id = $1", userId);
-    if (user.rows[0].rola !== 'admin' || user.rows.length === 0) {
-      alert("Brak uprawnień do usuwania notatki");
-      return res.status(403).json({ message: 'Brak uprawnień' });
+    if (!sessionId) {
+      return res.status(401).json({ message: "Brak sesji użytkownika" });
     }
 
+    // Pobranie userId z sesji
+    const sessionResult = await pool.query("SELECT user_id FROM sessions WHERE id = $1", [sessionId]);
+    if (sessionResult.rowCount === 0) {
+      return res.status(401).json({ message: "Nie znaleziono sesji" });
+    }
+    const userId = sessionResult.rows[0].user_id;
+
+    // Pobranie roli użytkownika
+    const userResult = await pool.query("SELECT rola FROM users WHERE id = $1", [userId]);
+    if (userResult.rowCount === 0) {
+      return res.status(403).json({ message: "Nie znaleziono użytkownika" });
+    }
+    const rola = userResult.rows[0].rola;
+
+    // Sprawdzenie uprawnień (admin lub autor notatki)
+    if (rola !== 'admin') {
+      const noteResult = await pool.query("SELECT author_id FROM notki WHERE id = $1", [id]);
+      if (noteResult.rowCount === 0 || noteResult.rows[0].author_id !== userId) {
+        return res.status(403).json({ message: "Brak uprawnień do usunięcia notatki" });
+      }
+    }
+
+    // Usunięcie notatki
     await pool.query("DELETE FROM notki WHERE id = $1", [id]);
-    res.status(200).json({ message: 'Notatka usunięta' });
+    res.status(200).json({ message: "Notatka usunięta" });
   } catch (error) {
-    console.error('Błąd usuwania notatki', error.message);
-    res.status(500).json({ message: 'Oj coś poszło nie tak' });
+    console.error("Błąd podczas usuwania notatki:", error);
+    res.status(500).json({ message: "Błąd serwera" });
   }
 };
 
-module.exports = { szukajNotki, dodajNotke, pobierzNotatki, usunNotatke };
+
+const edytujNotke = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const sessionId = req.cookies.sessionId;
+
+    if (!sessionId) {
+      return res.status(401).json({ message: "Brak sesji użytkownika" });
+    }
+
+    // Pobieranie userId z sesji
+    const sessionResult = await pool.query("SELECT user_id FROM sessions WHERE id = $1", [sessionId]);
+    if (sessionResult.rowCount === 0) {
+      return res.status(401).json({ message: "Nie znaleziono sesji" });
+    }
+
+    const userId = sessionResult.rows[0].user_id;
+
+    // Sprawdzenie, czy użytkownik jest autorem notatki
+    const noteResult = await pool.query("SELECT author_id FROM notki WHERE id = $1", [id]);
+    if (noteResult.rowCount === 0) {
+      return res.status(404).json({ message: "Notatka nie istnieje" });
+    }
+
+    if (noteResult.rows[0].author_id !== userId) {
+      return res.status(403).json({ message: "Brak uprawnień do edytowania tej notatki" });
+    }
+
+    // Aktualizacja notatki
+    await pool.query("UPDATE notki SET content = $1 WHERE id = $2", [content, id]);
+
+    res.status(200).json({ message: "Notatka zaktualizowana" });
+  } catch (error) {
+    console.error("Błąd edycji notatki:", error);
+    res.status(500).json({ message: "Błąd serwera" });
+  }
+};
+
+
+module.exports = { szukajNotki, dodajNotke, pobierzNotatki, usunNotatke, edytujNotke };
