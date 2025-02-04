@@ -26,7 +26,7 @@ rejestracjaBaton.addEventListener("click", async () => {
   
       if (!response.ok) {
         const messageErr = await response.json();
-        alert("Coś poszło nie tak:", messageErr.message);
+        alert("Podczas rejestracji wystąpił błąd. Być może taki użytkownik już istnieje", messageErr.message);
         return;
       }
   

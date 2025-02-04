@@ -24,7 +24,6 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/auth", authSciezki);
 app.use("/notes", notkiSzprotki);
 
-// Ścieżki do widoków HTML
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "rejestracja.html"));
 });
@@ -60,12 +59,12 @@ const wss = new WebSocket.Server({ server });
 
 wss.on("connection", async (ws, request) => {
   try {
-      console.log("🚀 Nowe połączenie WebSocket");
+      console.log("Nowe połączenie WebSocket");
       const cookies = request.headers.cookie;
-      console.log("📋 Ciasteczka:", cookies);
+      console.log("Ciasteczka:", cookies);
 
       if (!cookies) {
-          console.error("❌ Brak ciasteczek - zamykam połączenie");
+          console.error("Brak ciasteczek - zamykam połączenie");
           ws.close();
           return;
       }
@@ -78,7 +77,7 @@ wss.on("connection", async (ws, request) => {
       console.log("🔍 Otrzymane sessionId:", sessionId);
 
       if (!sessionId) {
-          console.error("❌ Brak sessionId - zamykam połączenie");
+          console.error("Brak sessionId - zamykam połączenie");
           ws.close();
           return;
       }
@@ -86,7 +85,7 @@ wss.on("connection", async (ws, request) => {
       const result = await pool.query("SELECT user_id FROM sessions WHERE id = $1", [sessionId]);
 
       if (result.rowCount === 0) {
-          console.error("❌ Nieprawidłowa sesja - zamykam połączenie");
+          console.error("Nieprawidłowa sesja - zamykam połączenie");
           ws.close();
           return;
       }
@@ -131,8 +130,6 @@ wss.on("connection", async (ws, request) => {
   }
 });
 
-
-// Start serwera
 server.listen(PORT, () => {
   console.log(`Serwer śmiga na porcie ${PORT}`);
 });

@@ -1,13 +1,12 @@
 "use strict";
 
-// Najpierw pobierz sessionId z backendu
 async function pobierzSessionId() {
   try {
       console.log("📡 Odebrano żądanie GET /auth/session");
 
       const response = await fetch("/auth/session");
       if (!response.ok) {
-          console.warn("❌ Błąd pobierania sesji:", response.statusText);
+          console.warn("Błąd pobierania sesji:", response.statusText);
           return null;
       }
 
@@ -15,7 +14,7 @@ async function pobierzSessionId() {
       console.log("🔍 Otrzymane sessionId:", data.sessionId);
       return data.sessionId;
   } catch (error) {
-      console.error("🔥 Błąd podczas pobierania sessionId:", error);
+      console.error("Błąd podczas pobierania sessionId:", error);
       return null;
   }
 }
@@ -75,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 if (response.ok) {
                     window.location.href = "/login";
+
                 } else {
                     console.error("Błąd podczas wylogowania:", response.statusText);
                     alert("Nie udało się wylogować. Spróbuj ponownie.");

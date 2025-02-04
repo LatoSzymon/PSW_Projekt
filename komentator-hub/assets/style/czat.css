@@ -1,8 +1,8 @@
 .strefa-czatu {
   background-color: white;
-  width: 30vw;
+  width: 800px;
   overflow-y: auto;
-  height: 800px;
+  height: 300px;
   border-radius: 20px;
   border: 1px solid grey;
 }

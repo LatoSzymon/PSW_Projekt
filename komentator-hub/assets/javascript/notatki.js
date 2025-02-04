@@ -7,12 +7,10 @@ const pobierzNotatki = async () => {
     const listaNotatek = document.getElementById('lista-notatek');
     listaNotatek.innerHTML = '';
 
-    // Pobierz informacje o zalogowanym użytkowniku
     const sessionRes = await fetch('/auth/session');
     const sessionData = await sessionRes.json();
     const sessionId = sessionData.sessionId;
 
-    // Pobierz dane użytkownika
     const userRes = await fetch(`/auth/user?sessionId=${sessionId}`);
     const userData = await userRes.json();
     const zalogowanyNick = userData.nick;
@@ -22,7 +20,6 @@ const pobierzNotatki = async () => {
       const li = document.createElement('li');
       li.textContent = `${el.content} (Autor: ${el.author}, Data: ${new Date(el.created_at).toLocaleString()})`;
 
-      // Sprawdź, czy użytkownik może edytować lub usuwać
       if (zalogowanyRola === 'admin' || el.author === zalogowanyNick) {
         const edytujBaton = document.createElement('button');
         edytujBaton.textContent = 'Edytuj';
@@ -70,7 +67,7 @@ const usunNotatke = async (id) => {
   try {
     const response = await fetch(`/notes/${id}`, {
       method: "DELETE",
-      credentials: "include", // Dodajemy, aby przesłać ciasteczka
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -80,7 +77,7 @@ const usunNotatke = async (id) => {
     }
 
     alert("Notatka została usunięta!");
-    pobierzNotatki(); // Odśwież listę notatek
+    pobierzNotatki();
   } catch (error) {
     console.error("Błąd podczas usuwania notatki:", error);
   }
@@ -93,7 +90,7 @@ const szukajNotki = async () => {
     
     let response;
     if (query === '') {
-      response = await fetch('/notes'); // Pobierz wszystkie notatki, jeśli brak zapytania
+      response = await fetch('/notes');
     } else {
       response = await fetch(`/notes/search?query=${query}`);
     }
